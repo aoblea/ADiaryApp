@@ -9,23 +9,25 @@
 /* Begin PBXBuildFile section */
 		AE48B96723A1A99E0058D4F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B96623A1A99E0058D4F2 /* AppDelegate.swift */; };
 		AE48B96923A1A99E0058D4F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B96823A1A99E0058D4F2 /* SceneDelegate.swift */; };
-		AE48B96B23A1A99E0058D4F2 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B96A23A1A99E0058D4F2 /* MasterViewController.swift */; };
-		AE48B96D23A1A99E0058D4F2 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B96C23A1A99E0058D4F2 /* DetailViewController.swift */; };
 		AE48B97023A1A99E0058D4F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AE48B96E23A1A99E0058D4F2 /* Main.storyboard */; };
 		AE48B97223A1A9A30058D4F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AE48B97123A1A9A30058D4F2 /* Assets.xcassets */; };
 		AE48B97523A1A9A30058D4F2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AE48B97323A1A9A30058D4F2 /* LaunchScreen.storyboard */; };
+		AE48B98823A2B7350058D4F2 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B98723A2B7350058D4F2 /* HomeViewController.swift */; };
+		AE48B98A23A2B7520058D4F2 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B98923A2B7520058D4F2 /* EntryViewController.swift */; };
+		AE48B99323A2C07C0058D4F2 /* Entry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE48B99223A2C07C0058D4F2 /* Entry.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AE48B96323A1A99E0058D4F2 /* A Diary App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "A Diary App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE48B96623A1A99E0058D4F2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AE48B96823A1A99E0058D4F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		AE48B96A23A1A99E0058D4F2 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		AE48B96C23A1A99E0058D4F2 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		AE48B96F23A1A99E0058D4F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AE48B97123A1A9A30058D4F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AE48B97423A1A9A30058D4F2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AE48B97623A1A9A30058D4F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AE48B98723A2B7350058D4F2 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		AE48B98923A2B7520058D4F2 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
+		AE48B99223A2C07C0058D4F2 /* Entry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entry.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,16 +60,49 @@
 		AE48B96523A1A99E0058D4F2 /* A Diary App */ = {
 			isa = PBXGroup;
 			children = (
-				AE48B96623A1A99E0058D4F2 /* AppDelegate.swift */,
-				AE48B96823A1A99E0058D4F2 /* SceneDelegate.swift */,
-				AE48B96A23A1A99E0058D4F2 /* MasterViewController.swift */,
-				AE48B96C23A1A99E0058D4F2 /* DetailViewController.swift */,
-				AE48B96E23A1A99E0058D4F2 /* Main.storyboard */,
+				AE48B97C23A1C8D30058D4F2 /* Models */,
+				AE48B98023A1C9370058D4F2 /* Views */,
+				AE48B98123A1C94C0058D4F2 /* Controllers */,
+				AE48B98223A1C9570058D4F2 /* Helpers */,
 				AE48B97123A1A9A30058D4F2 /* Assets.xcassets */,
 				AE48B97323A1A9A30058D4F2 /* LaunchScreen.storyboard */,
 				AE48B97623A1A9A30058D4F2 /* Info.plist */,
 			);
 			path = "A Diary App";
+			sourceTree = "<group>";
+		};
+		AE48B97C23A1C8D30058D4F2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AE48B99223A2C07C0058D4F2 /* Entry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AE48B98023A1C9370058D4F2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AE48B96E23A1A99E0058D4F2 /* Main.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AE48B98123A1C94C0058D4F2 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				AE48B98723A2B7350058D4F2 /* HomeViewController.swift */,
+				AE48B98923A2B7520058D4F2 /* EntryViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		AE48B98223A1C9570058D4F2 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				AE48B96623A1A99E0058D4F2 /* AppDelegate.swift */,
+				AE48B96823A1A99E0058D4F2 /* SceneDelegate.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,10 +176,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE48B99323A2C07C0058D4F2 /* Entry.swift in Sources */,
 				AE48B96723A1A99E0058D4F2 /* AppDelegate.swift in Sources */,
+				AE48B98A23A2B7520058D4F2 /* EntryViewController.swift in Sources */,
 				AE48B96923A1A99E0058D4F2 /* SceneDelegate.swift in Sources */,
-				AE48B96B23A1A99E0058D4F2 /* MasterViewController.swift in Sources */,
-				AE48B96D23A1A99E0058D4F2 /* DetailViewController.swift in Sources */,
+				AE48B98823A2B7350058D4F2 /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

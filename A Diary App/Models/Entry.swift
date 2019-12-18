@@ -8,17 +8,20 @@
 
 import UIKit
 
+// Model used before implementing core data
 class Entry {
-  let text: String
-  let creationDate: Date
+  var title: String
+  var content: String
+  var creationDate: Date
+  var emotion: UIImage?
   var photo: UIImage?
-  var emotion: String?
 //  var location: String? for core location implementation
   
-  init(text: String, creationDate: Date, photo: UIImage?, emotion: String?) {
-    self.text = text
+  init(title: String, content: String, creationDate: Date, emotion: UIImage?, photo: UIImage?) {
+    self.title = title
+    self.content = content
     self.creationDate = creationDate
-    self.photo = photo
     self.emotion = emotion
+    self.photo = photo
   }
 }

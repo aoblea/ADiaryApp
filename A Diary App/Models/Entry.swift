@@ -15,13 +15,16 @@ class Entry {
   var creationDate: Date
   var emotion: UIImage?
   var photo: UIImage?
-//  var location: String? for core location implementation
+  var latitude: Double?
+  var longitude: Double?
   
-  init(title: String, content: String, creationDate: Date, emotion: UIImage?, photo: UIImage?) {
+  init(title: String, content: String, creationDate: Date, emotion: UIImage?, photo: UIImage?, latitude: Double?, longitude: Double?) {
     self.title = title
     self.content = content
     self.creationDate = creationDate
     self.emotion = emotion
     self.photo = photo
+    self.latitude = latitude
+    self.longitude = longitude
   }
 }

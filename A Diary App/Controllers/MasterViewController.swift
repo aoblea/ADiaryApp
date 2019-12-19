@@ -63,13 +63,19 @@ class MasterViewController: UITableViewController {
       cell.emotionImageView.image = entry(from: indexPath).emotion
     }
     
-    // TODO: Setup photo image view, geo location label
     if entry(from: indexPath).photo == nil {
       cell.entryImageView.image = UIImage(named: "icn_noimage")
     } else {
       cell.entryImageView.image = entry(from: indexPath).photo
     }
     
+    if entry(from: indexPath).latitude == nil && entry(from: indexPath).longitude == nil {
+      cell.locationLabel.text = "Location unavailable"
+    } else {
+      if let entryLatitude = entry(from: indexPath).latitude, let entryLongitude = entry(from: indexPath).longitude {
+        cell.locationLabel.text = "Lat: \(entryLatitude), Long: \(entryLongitude)"
+      }
+    }
     
     return cell
   }
@@ -96,7 +102,18 @@ class MasterViewController: UITableViewController {
     if segue.identifier == "addEntry" {
       let destination = segue.destination as? DetailViewController
       destination?.delegate = self
+    } else if segue.identifier == "showEntry" {
+      if let indexPath = tableView.indexPathForSelectedRow {
+        let selectedEntry = entry(from: indexPath)
+        let displayViewController = segue.destination as? DisplayViewController
+        displayViewController?.entry = selectedEntry
+      }
     }
+    
+   
+    
   }
+  
+  
   
 }

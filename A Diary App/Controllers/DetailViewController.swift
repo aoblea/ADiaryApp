@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 // TODO: - For titleTextField, I can limit the number of characters that can be entered.
 
@@ -26,11 +27,16 @@ class DetailViewController: UIViewController {
   
   var selectedPhoto: UIImage?
   
+  var latitude: Double?
+  var longitude: Double?
+  
   lazy var photoPickerManager: PhotoPickerManager = {
     let manager = PhotoPickerManager(presentingViewController: self)
     manager.delegate = self
     return manager
   }()
+  
+  let locationManager = CLLocationManager()
   
   // MARK: - IBOutlets
   
@@ -68,7 +74,24 @@ class DetailViewController: UIViewController {
     
     setupPhotoPicker()
     
-    // Do any additional setup after loading the view.
+    if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+      setupLocationManager()
+    } else {
+      // request permission again
+    }
+  }
+  
+  // MARK: - Viewdidappear
+  
+  override func viewDidAppear(_ animated: Bool) {
+    if CLLocationManager.authorizationStatus() == .notDetermined {
+      locationManager.requestWhenInUseAuthorization()
+    }
+  }
+  
+  func setupLocationManager() {
+    locationManager.delegate = self
+    locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
   }
   
   func setupPhotoPicker() {
@@ -103,7 +126,6 @@ class DetailViewController: UIViewController {
     contentTextView.text = "Write more about your day here."
     contentTextView.textColor = .lightGray
   }
-  
 
   @IBAction func saveEntry(_ sender: UIBarButtonItem) {
     // save entry
@@ -113,19 +135,17 @@ class DetailViewController: UIViewController {
       print("Cannot save entry with an empty title and/or content")
     } else {
       
-      
-      let newEntry = Entry(title: title, content: content, creationDate: today, emotion: selectedEmote, photo: selectedPhoto)
+      let newEntry = Entry(title: title, content: content, creationDate: today, emotion: selectedEmote, photo: selectedPhoto, latitude: latitude, longitude: longitude)
       delegate?.add(with: newEntry)
+      print("\(String(describing: latitude)), \(String(describing: longitude))")
+      
+      locationManager.stopUpdatingLocation()
       
       self.navigationController?.popViewController(animated: true)
     }
-    
-    
   }
   
-
 }
-
 
 // MARK: - Emotion buttons selection methods
 
@@ -204,7 +224,7 @@ extension DetailViewController {
   
 }
 
-// MARK: Text view delegate methods
+// MARK: - Text view delegate methods
 
 extension DetailViewController: UITextViewDelegate {
   func textViewDidBeginEditing(_ textView: UITextView) {
@@ -232,9 +252,29 @@ extension DetailViewController: UITextViewDelegate {
   }
 }
 
+// MARK: - Photo picker manager delegate methods
+
 extension DetailViewController: PhotoPickerManagerDelegate {
   func manager(_ manager: PhotoPickerManager, didPickImage image: UIImage) {
     selectedPhoto = image
     manager.dismissPhotoPicker(animated: true, completion: nil)
+  }
+}
+
+// MARK: - Core location manager delegate methods
+
+extension DetailViewController: CLLocationManagerDelegate {
+  func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    if status == .authorizedWhenInUse {
+      manager.startUpdatingLocation()
+    }
+  }
+  
+  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    
+    guard let location = manager.location?.coordinate else { return }
+    
+    latitude = location.latitude
+    longitude = location.longitude
   }
 }

@@ -8,38 +8,35 @@
 
 import UIKit
 import CoreLocation
-
-// TODO: - For titleTextField, I can limit the number of characters that can be entered.
+import CoreData
 
 // This controller will be used to create entries.
 class DetailViewController: UIViewController {
   
   // MARK: - Properties
-  
-  let today = Date()
   let dateFormatter = DateFormatter()
-  weak var delegate: MasterViewController?
+  let today = Date()
   
   var selectedEmote: UIImage?
   let goodEmoteImage = UIImage(named: "icn_happy")
   let averageEmoteImage = UIImage(named: "icn_average")
   let badEmoteImage = UIImage(named: "icn_bad")
+
+  var latitude: String?
+  var longitude: String?
+  let locationManager = CLLocationManager()
   
   var selectedPhoto: UIImage?
-  
-  var latitude: Double?
-  var longitude: Double?
-  
   lazy var photoPickerManager: PhotoPickerManager = {
     let manager = PhotoPickerManager(presentingViewController: self)
     manager.delegate = self
     return manager
   }()
   
-  let locationManager = CLLocationManager()
+  var entry: Entry?
+  var managedObjectContext: NSManagedObjectContext!
   
   // MARK: - IBOutlets
-  
   @IBOutlet weak var titleTextField: UITextField!
   @IBOutlet weak var contentTextView: UITextView!
   @IBOutlet weak var contentLimitLabel: UILabel!
@@ -62,16 +59,13 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var saveButton: UIBarButtonItem!
   
   // MARK: - Viewdidload
-  
   override func viewDidLoad() {
     super.viewDidLoad()
 
     setupUI()
     setupEmoteButtons()
     setupContentTextView()
-    
     setupTitle()
-    
     setupPhotoPicker()
     
     if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
@@ -79,10 +73,20 @@ class DetailViewController: UIViewController {
     } else {
       // request permission again
     }
+    
+    // if entry exists, we are in editing mode
+    if let entry = entry {
+      self.titleTextField.text = entry.title
+      self.contentTextView.text = entry.content
+      self.selectedEmote = entry.emoteImage
+      self.selectedPhoto = entry.photoImage
+      self.latitude = entry.latitude
+      self.longitude = entry.longitude
+    }
+    
   }
   
   // MARK: - Viewdidappear
-  
   override func viewDidAppear(_ animated: Bool) {
     if CLLocationManager.authorizationStatus() == .notDetermined {
       locationManager.requestWhenInUseAuthorization()
@@ -102,7 +106,7 @@ class DetailViewController: UIViewController {
     photoPickerManager.presentPhotoPicker(animated: true)
   }
   
-  // this method should take today's date whenever creating a new entry
+  // this method should take today's date whenever creating a new entry/updating an existing entry
   func setupTitle() {
     dateFormatter.dateStyle = .medium
     let formattedDate = dateFormatter.string(from: today)
@@ -128,27 +132,51 @@ class DetailViewController: UIViewController {
   }
 
   @IBAction func saveEntry(_ sender: UIBarButtonItem) {
-    // save entry
+
     guard let title = titleTextField.text, let content = contentTextView.text else { return }
 
     if title.isEmpty || content.isEmpty {
       print("Cannot save entry with an empty title and/or content")
+    } else if title.count == 20 {
+    
+      print("Title needs to be 20 characters or less")
     } else {
-      
-      let newEntry = Entry(title: title, content: content, creationDate: today, emotion: selectedEmote, photo: selectedPhoto, latitude: latitude, longitude: longitude)
-      delegate?.add(with: newEntry)
-      print("\(String(describing: latitude)), \(String(describing: longitude))")
-      
-      locationManager.stopUpdatingLocation()
-      
-      self.navigationController?.popViewController(animated: true)
+      if let updatedEntry = entry {
+        // update existing entry
+        updatedEntry.title = title
+        updatedEntry.content = content
+        updatedEntry.creationDate = today
+        updatedEntry.emotion = selectedEmote?.jpegData(compressionQuality: 1.0)
+        updatedEntry.photo = selectedPhoto?.jpegData(compressionQuality: 1.0)
+        updatedEntry.latitude = latitude?.description
+        updatedEntry.longitude = longitude?.description
+        
+        managedObjectContext.saveChanges()
+        
+        locationManager.stopUpdatingLocation()
+        navigationController?.popToRootViewController(animated: true)
+      } else {
+        // creating a new entry
+        let entry = NSEntityDescription.insertNewObject(forEntityName: "Entry", into: managedObjectContext) as! Entry
+        entry.title = title
+        entry.content = content
+        entry.creationDate = today
+        entry.emotion = selectedEmote?.jpegData(compressionQuality: 1.0)
+        entry.photo = selectedPhoto?.jpegData(compressionQuality: 1.0)
+        entry.latitude = latitude?.description
+        entry.longitude = longitude?.description
+
+        managedObjectContext.saveChanges()
+
+        locationManager.stopUpdatingLocation()
+        navigationController?.popToRootViewController(animated: true)
+      }
     }
   }
   
 }
 
 // MARK: - Emotion buttons selection methods
-
 extension DetailViewController {
   @objc func goodButtonPressed() {
     determineGoodSelection()
@@ -225,7 +253,6 @@ extension DetailViewController {
 }
 
 // MARK: - Text view delegate methods
-
 extension DetailViewController: UITextViewDelegate {
   func textViewDidBeginEditing(_ textView: UITextView) {
     if textView.textColor == .lightGray {
@@ -253,7 +280,6 @@ extension DetailViewController: UITextViewDelegate {
 }
 
 // MARK: - Photo picker manager delegate methods
-
 extension DetailViewController: PhotoPickerManagerDelegate {
   func manager(_ manager: PhotoPickerManager, didPickImage image: UIImage) {
     selectedPhoto = image
@@ -262,7 +288,6 @@ extension DetailViewController: PhotoPickerManagerDelegate {
 }
 
 // MARK: - Core location manager delegate methods
-
 extension DetailViewController: CLLocationManagerDelegate {
   func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
     if status == .authorizedWhenInUse {
@@ -271,10 +296,9 @@ extension DetailViewController: CLLocationManagerDelegate {
   }
   
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    
     guard let location = manager.location?.coordinate else { return }
     
-    latitude = location.latitude
-    longitude = location.longitude
+    latitude = "\(location.latitude)"
+    longitude = "\(location.longitude)"
   }
 }

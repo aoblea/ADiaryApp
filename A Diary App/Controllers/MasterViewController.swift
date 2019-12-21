@@ -7,25 +7,25 @@
 //
 
 import UIKit
+import CoreData
 
 class MasterViewController: UITableViewController {
   
   // MARK: - Properties
-  
-  var entries = [Entry]()
-  let dateFormatter = DateFormatter()
+  let managedObjectContext = CoreDataStack().managedObjectContext
+  lazy var datasource: MasterDataSource = {
+    return MasterDataSource(tableView: self.tableView, managedObjectContext: self.managedObjectContext)
+  }()
   
   // MARK: - IBOutlets
-  
   @IBOutlet weak var addEntryButton: UIBarButtonItem!
   
   // MARK: - Viewdidload
-
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.tableView.dataSource = datasource
     setupNavBar()
-
   }
   
   func setupNavBar() {
@@ -34,86 +34,31 @@ class MasterViewController: UITableViewController {
     self.navigationController?.navigationBar.barTintColor = UIColor.ThemeColor.smokyBlack
   }
   
-
-  
-  // MARK: - Table view data source
-
-  override func numberOfSections(in tableView: UITableView) -> Int {
-    return 1
-  }
-
-  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return entries.count
-  }
-  
-  // TODO: - Create a view model using masterviewcell to create cleaner code
-
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as! MasterViewCell
-    cell.titleLabel.text = entry(from: indexPath).title
-    
-    dateFormatter.dateFormat = "EEEE d MMMM"
-    let formattedDate = dateFormatter.string(from: entry(from: indexPath).creationDate)
-    cell.creationDateLabel.text = formattedDate
-    
-    if entry(from: indexPath).emotion == nil {
-      cell.emotionImageView.isHidden = true
-    } else {
-      cell.emotionImageView.isHidden = false
-      cell.emotionImageView.image = entry(from: indexPath).emotion
-    }
-    
-    if entry(from: indexPath).photo == nil {
-      cell.entryImageView.image = UIImage(named: "icn_noimage")
-    } else {
-      cell.entryImageView.image = entry(from: indexPath).photo
-    }
-    
-    if entry(from: indexPath).latitude == nil && entry(from: indexPath).longitude == nil {
-      cell.locationLabel.text = "Location unavailable"
-    } else {
-      if let entryLatitude = entry(from: indexPath).latitude, let entryLongitude = entry(from: indexPath).longitude {
-        cell.locationLabel.text = "Lat: \(entryLatitude), Long: \(entryLongitude)"
-      }
-    }
-    
-    return cell
-  }
-  
+  // MARK: - Tableview delegate methods
   override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    return 80
+    return 100
   }
   
-  // MARK: - Helper methods
-  
-  func entry(from indexPath: IndexPath) -> Entry {
-    return entries[indexPath.row]
+  override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+    return .delete
   }
   
-  func add(with newEntry: Entry) {
-    entries.append(newEntry)
-    tableView.reloadData()
-  }
-  
-
   // MARK: - Navigation
-  
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "addEntry" {
-      let destination = segue.destination as? DetailViewController
-      destination?.delegate = self
+      guard let detailViewController = segue.destination as? DetailViewController else { return }
+      
+      detailViewController.managedObjectContext = self.managedObjectContext
     } else if segue.identifier == "showEntry" {
-      if let indexPath = tableView.indexPathForSelectedRow {
-        let selectedEntry = entry(from: indexPath)
-        let displayViewController = segue.destination as? DisplayViewController
-        displayViewController?.entry = selectedEntry
-      }
+      guard let displayViewController = segue.destination as? DisplayViewController, let indexPath = tableView.indexPathForSelectedRow else { return }
+      
+      let entry = datasource.object(at: indexPath)
+      displayViewController.entry = entry
+      displayViewController.managedObjectContext = self.managedObjectContext
     }
-    
-   
-    
   }
   
-  
-  
 }
+
+
+

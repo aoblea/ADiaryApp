@@ -16,7 +16,7 @@ public class Entry: NSManagedObject {
 }
 
 extension Entry {
-
+  
   @nonobjc public class func fetchRequest() -> NSFetchRequest<Entry> {
     let request = NSFetchRequest<Entry>(entityName: "Entry")
     let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: true)
@@ -32,10 +32,11 @@ extension Entry {
   @NSManaged public var longitude: String?
   @NSManaged public var photo: Data?
   @NSManaged public var title: String
-
+  
 }
 
 extension Entry {
+  
   var photoImage: UIImage {
     if let photo = self.photo {
       return UIImage(data: photo)!

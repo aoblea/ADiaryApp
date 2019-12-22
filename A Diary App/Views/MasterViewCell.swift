@@ -11,6 +11,7 @@ import UIKit
 class MasterViewCell: UITableViewCell {
   
   // MARK: - IBOutlets
+  
   @IBOutlet weak var entryImageView: UIImageView!
   @IBOutlet weak var creationDateLabel: UILabel!
   @IBOutlet weak var titleLabel: UILabel!

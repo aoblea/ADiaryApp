@@ -10,11 +10,12 @@ import UIKit
 import CoreData
 
 class EntryFetchedResultsController: NSFetchedResultsController<Entry>, NSFetchedResultsControllerDelegate {
+  
   private let tableView: UITableView
   
-  init(managedObjectContext: NSManagedObjectContext, tableView: UITableView) {
+  init(managedObjectContext: NSManagedObjectContext, tableView: UITableView, fetchRequest: NSFetchRequest<Entry>) {
     self.tableView = tableView
-    super.init(fetchRequest: Entry.fetchRequest(), managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+    super.init(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
       
     self.delegate = self
     
@@ -30,6 +31,7 @@ class EntryFetchedResultsController: NSFetchedResultsController<Entry>, NSFetche
   }
   
   // MARK: - Fetched results controller delegate
+  
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
   }
@@ -53,4 +55,5 @@ class EntryFetchedResultsController: NSFetchedResultsController<Entry>, NSFetche
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.endUpdates()
   }
+  
 }

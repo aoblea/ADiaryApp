@@ -10,6 +10,7 @@ import Foundation
 import CoreData
 
 class CoreDataStack {
+  
   lazy var managedObjectContext: NSManagedObjectContext = {
     let container = self.persistentContainer
     return container.viewContext
@@ -28,9 +29,11 @@ class CoreDataStack {
     
     return container
   }()
+  
 }
 
 extension NSManagedObjectContext {
+  
   func saveChanges() {
     if self.hasChanges {
       do {
@@ -40,4 +43,5 @@ extension NSManagedObjectContext {
       }
     }
   }
+  
 }

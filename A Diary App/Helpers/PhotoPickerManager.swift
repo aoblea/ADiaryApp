@@ -14,6 +14,7 @@ protocol PhotoPickerManagerDelegate: class {
 }
 
 class PhotoPickerManager: NSObject {
+  
   private let imagePickerController = UIImagePickerController()
   private let presentingController: UIViewController
   weak var delegate: PhotoPickerManagerDelegate?
@@ -48,8 +49,10 @@ class PhotoPickerManager: NSObject {
 }
 
 extension PhotoPickerManager: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+  
   func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
     guard let image = info[.originalImage] as? UIImage else { return }
     delegate?.manager(self, didPickImage: image)
   }
+  
 }

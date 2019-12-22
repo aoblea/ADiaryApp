@@ -12,21 +12,26 @@ import CoreData
 class MasterDataSource: NSObject, UITableViewDataSource {
   
   // MARK: - Properties
+  
   private let tableView: UITableView
   private let managedObjectContext: NSManagedObjectContext
+  private let request: NSFetchRequest<Entry>
   let dateFormatter = DateFormatter()
   
   lazy var fetchedResultsController: EntryFetchedResultsController = {
-    return EntryFetchedResultsController(managedObjectContext: self.managedObjectContext, tableView: self.tableView)
+    return EntryFetchedResultsController(managedObjectContext: self.managedObjectContext, tableView: self.tableView, fetchRequest: self.request)
   }()
   
   // MARK: - Init
-  init(tableView: UITableView, managedObjectContext: NSManagedObjectContext) {
+  
+  init(tableView: UITableView, managedObjectContext: NSManagedObjectContext, fetchRequest: NSFetchRequest<Entry>) {
     self.tableView = tableView
     self.managedObjectContext = managedObjectContext
+    self.request = fetchRequest
   }
 
   // MARK: - Tableview data source methods
+  
   func numberOfSections(in tableView: UITableView) -> Int {
     return fetchedResultsController.sections?.count ?? 0
   }
@@ -43,7 +48,6 @@ class MasterDataSource: NSObject, UITableViewDataSource {
   }
   
   // TODO: - Create a view model using masterviewcell to create cleaner code
-
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "EntryCell", for: indexPath) as! MasterViewCell
     return configureCell(cell, at: indexPath)
@@ -83,7 +87,9 @@ class MasterDataSource: NSObject, UITableViewDataSource {
   }
   
   // MARK: - Helper methods
+  
   func object(at indexPath: IndexPath) -> Entry {
     return fetchedResultsController.object(at: indexPath)
   }
+  
 }

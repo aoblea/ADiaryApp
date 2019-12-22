@@ -14,6 +14,7 @@ import CoreData
 class DisplayViewController: UIViewController {
   
   // MARK: - IBOutlets
+  
   @IBOutlet weak var mapView: MKMapView!
   @IBOutlet weak var photoImageView: UIImageView!
   @IBOutlet weak var emoteImageView: UIImageView!
@@ -22,11 +23,13 @@ class DisplayViewController: UIViewController {
   @IBOutlet weak var contentTextView: UITextView!
   
   // MARK: - Properties
+  
   var entry: Entry?
   var managedObjectContext: NSManagedObjectContext!
   let dateFormatter = DateFormatter()
   
   // MARK: - Viewdidload
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -35,6 +38,7 @@ class DisplayViewController: UIViewController {
   }
   
   // MARK: - Helper methods
+  
   func setupUI() {
     view.backgroundColor = UIColor.ThemeColor.russianViolet
     titleLabel.textColor = UIColor.ThemeColor.paradisePink
@@ -61,20 +65,19 @@ class DisplayViewController: UIViewController {
   
   func setupMap() {
     if let lat = entry?.latitude, let long = entry?.longitude {
-      let doubleLat = Double(lat)
-      let doubleLong = Double(long)
+      guard let doubleLat = Double(lat), let doubleLong = Double(long) else { return }
       
-      let coordinate2D = CLLocationCoordinate2D(latitude: doubleLat!, longitude: doubleLong!)
+      let coordinate2D = CLLocationCoordinate2D(latitude: doubleLat, longitude: doubleLong)
       
       let radius: CLLocationDistance = 1000
       let span = MKCoordinateRegion(center: coordinate2D, latitudinalMeters: radius, longitudinalMeters: radius).span
       let region = MKCoordinateRegion(center: coordinate2D, span: span)
       mapView.setRegion(region, animated: true)
     }
-    
   }
   
   // MARK: - Navigation
+  
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "editEntry" {
       guard let detailViewController = segue.destination as? DetailViewController else { return }

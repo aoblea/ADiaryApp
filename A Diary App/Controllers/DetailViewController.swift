@@ -14,6 +14,7 @@ import CoreData
 class DetailViewController: UIViewController {
   
   // MARK: - Properties
+  
   let dateFormatter = DateFormatter()
   let today = Date()
   
@@ -37,6 +38,7 @@ class DetailViewController: UIViewController {
   var managedObjectContext: NSManagedObjectContext!
   
   // MARK: - IBOutlets
+  
   @IBOutlet weak var titleTextField: UITextField!
   @IBOutlet weak var contentTextView: UITextView!
   @IBOutlet weak var contentLimitLabel: UILabel!
@@ -59,6 +61,7 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var saveButton: UIBarButtonItem!
   
   // MARK: - Viewdidload
+  
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -72,6 +75,7 @@ class DetailViewController: UIViewController {
       setupLocationManager()
     } else {
       // request permission again
+      locationManager.requestWhenInUseAuthorization()
     }
     
     // if entry exists, we are in editing mode
@@ -87,6 +91,7 @@ class DetailViewController: UIViewController {
   }
   
   // MARK: - Viewdidappear
+  
   override func viewDidAppear(_ animated: Bool) {
     if CLLocationManager.authorizationStatus() == .notDetermined {
       locationManager.requestWhenInUseAuthorization()
@@ -131,15 +136,15 @@ class DetailViewController: UIViewController {
     contentTextView.textColor = .lightGray
   }
 
+  // MARK: - Save bar button method
+  
   @IBAction func saveEntry(_ sender: UIBarButtonItem) {
-
     guard let title = titleTextField.text, let content = contentTextView.text else { return }
 
-    if title.isEmpty || content.isEmpty {
-      print("Cannot save entry with an empty title and/or content")
-    } else if title.count == 20 {
-    
-      print("Title needs to be 20 characters or less")
+    if title.count >= 20 {
+      self.presentAlert(error: .exceedsCharacterLimit)
+    } else if title.isEmpty || content.isEmpty {
+      self.presentAlert(error: .emptyInformation)
     } else {
       if let updatedEntry = entry {
         // update existing entry
@@ -176,129 +181,4 @@ class DetailViewController: UIViewController {
   
 }
 
-// MARK: - Emotion buttons selection methods
-extension DetailViewController {
-  @objc func goodButtonPressed() {
-    determineGoodSelection()
-  }
-  
-  func determineGoodSelection() {
-    goodButton.isSelected = !goodButton.isSelected
-    if goodButton.isSelected {
-      print("good selected")
-      goodButton.alpha = 0.5
-      
-      if averageButton.isSelected == true {
-        determineAverageSelection()
-      } else if badButton.isSelected == true {
-        determineBadSelection()
-      }
-      
-      selectedEmote = goodEmoteImage
-    } else {
-      print("good unselected")
-      goodButton.alpha = 1.0
-      selectedEmote = nil
-    }
-  }
-  
-  @objc func averageButtonPressed() {
-    determineAverageSelection()
-  }
-  
-  func determineAverageSelection() {
-    averageButton.isSelected = !averageButton.isSelected
-    if averageButton.isSelected {
-      print("average selected")
-      averageButton.alpha = 0.5
-      
-      if goodButton.isSelected == true {
-        determineGoodSelection()
-      } else if badButton.isSelected == true {
-        determineBadSelection()
-      }
-      
-      selectedEmote = averageEmoteImage
-    } else {
-      print("average unselected")
-      averageButton.alpha = 1.0
-      selectedEmote = nil
-    }
-  }
-  
-  @objc func badButtonPressed() {
-    determineBadSelection()
-  }
-  
-  func determineBadSelection() {
-    badButton.isSelected = !badButton.isSelected
-    if badButton.isSelected {
-      print("bad selected")
-      badButton.alpha = 0.5
-      
-      if goodButton.isSelected == true {
-        determineGoodSelection()
-      } else if averageButton.isSelected == true {
-        determineAverageSelection()
-      }
-      
-      selectedEmote = badEmoteImage
-    } else {
-      print("bad unselected")
-      badButton.alpha = 1.0
-      selectedEmote = nil
-    }
-  }
-  
-}
 
-// MARK: - Text view delegate methods
-extension DetailViewController: UITextViewDelegate {
-  func textViewDidBeginEditing(_ textView: UITextView) {
-    if textView.textColor == .lightGray {
-      textView.text = nil
-      textView.textColor = .black
-    }
-  }
-  
-  func textViewDidEndEditing(_ textView: UITextView) {
-      if textView.text.isEmpty {
-          textView.text = "Write more about your day here."
-          textView.textColor = .lightGray
-      }
-  }
-  
-  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    let currentText = textView.text ?? ""
-    guard let textRange = Range(range, in: currentText) else { return false }
-    let updatedText = currentText.replacingCharacters(in: textRange, with: text)
-
-    contentLimitLabel.text = "\(updatedText.count)/200"
-
-    return updatedText.count < 200
-  }
-}
-
-// MARK: - Photo picker manager delegate methods
-extension DetailViewController: PhotoPickerManagerDelegate {
-  func manager(_ manager: PhotoPickerManager, didPickImage image: UIImage) {
-    selectedPhoto = image
-    manager.dismissPhotoPicker(animated: true, completion: nil)
-  }
-}
-
-// MARK: - Core location manager delegate methods
-extension DetailViewController: CLLocationManagerDelegate {
-  func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-    if status == .authorizedWhenInUse {
-      manager.startUpdatingLocation()
-    }
-  }
-  
-  func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    guard let location = manager.location?.coordinate else { return }
-    
-    latitude = "\(location.latitude)"
-    longitude = "\(location.longitude)"
-  }
-}
